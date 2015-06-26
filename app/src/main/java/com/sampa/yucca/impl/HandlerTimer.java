@@ -3,7 +3,9 @@ package com.sampa.yucca.impl;
 import android.os.Handler;
 import android.util.Log;
 
+import com.sampa.yucca.core.TickEvent;
 import com.sampa.yucca.core.Timer;
+import com.sampa.yucca.core.TimerListener;
 
 /**
  * Created by cclamb on 6/21/15.
@@ -16,12 +18,16 @@ public class HandlerTimer implements Timer {
     private Runnable runner;
     private TimerState state;
 
-    public HandlerTimer() {
+    private final TimerListener listener;
+
+    public HandlerTimer(TimerListener listener) {
+        this.listener = listener;
         state = TimerState.stopped;
     }
 
     @Override
     public void start() {
+        listener.starting();
         switch (state) {
             case stopped:
                 startNewTimer();
@@ -33,6 +39,7 @@ public class HandlerTimer implements Timer {
                 throw new IllegalStateException();
         }
         state = TimerState.started;
+        listener.started();
     }
 
     private void startNewTimer() {
@@ -47,19 +54,24 @@ public class HandlerTimer implements Timer {
 
     @Override
     public void pause() {
+        listener.pausing();
         state = TimerState.paused;
+        listener.paused();
     }
 
     @Override
     public void stop() {
+        listener.stopping();
         handler.removeCallbacks(runner);
         state = TimerState.stopped;
+        listener.stopped();
     }
 
     private class TimerRunner implements Runnable {
 
         @Override
         public void run() {
+            listener.tick(new TickEvent());
             Log.d("TR", "tick");
         }
     }

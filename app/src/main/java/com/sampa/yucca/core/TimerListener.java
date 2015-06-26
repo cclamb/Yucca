@@ -3,10 +3,12 @@ package com.sampa.yucca.core;
 /**
  * Created by cclamb on 6/20/15.
  */
-public interface TimerState {
+public interface TimerListener {
     void starting();
     void started();
-    void tick();
+    void tick(TickEvent e);
+    void pausing();
+    void paused();
     void stopping();
     void stopped();
 }

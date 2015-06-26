@@ -5,8 +5,6 @@ import com.sampa.yucca.core.Timer;
 import com.sampa.yucca.core.TimerListener;
 import com.sampa.yucca.impl.HandlerTimer;
 
-import junit.framework.Assert;
-
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -138,12 +136,12 @@ class TimerTestListener implements TimerListener {
  */
 public final class HandlerTimerTest {
 
-    private TimerTestContext ctx;
-    private TimerListener listener;
-    private Timer timer;
+    private static TimerTestContext ctx;
+    private static TimerListener listener;
+    private static Timer timer;
 
     @BeforeClass
-    public void createTimer() {
+    public static void createTimer() {
         ctx = new TimerTestContext();
         listener = new TimerTestListener(ctx);
         timer = new HandlerTimer(listener);

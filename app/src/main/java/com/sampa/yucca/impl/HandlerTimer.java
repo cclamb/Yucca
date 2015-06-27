@@ -73,6 +73,9 @@ public class HandlerTimer implements Timer {
         public void run() {
             listener.tick(new TickEvent());
             Log.d("TR", "tick");
+            if (handler != null) {
+                handler.postDelayed(this, INTERVAL);
+            }
         }
     }
 

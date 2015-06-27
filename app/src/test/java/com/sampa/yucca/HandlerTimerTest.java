@@ -16,6 +16,9 @@ final class TimerTestContext {
     private boolean tickFired;
     private boolean pausingFired;
     private boolean pausedFired;
+    private boolean stoppingFired;
+    private boolean stoppedFired;
+    private TickEvent lastEvent;
 
     public void reset() {
         startingFired = false;
@@ -45,8 +48,13 @@ final class TimerTestContext {
         return tickFired;
     }
 
-    public void tickFired() {
+    public void tickFired(TickEvent e) {
         tickFired = true;
+        lastEvent = e;
+    }
+
+    public TickEvent getLastEvent() {
+        return lastEvent;
     }
 
     public boolean isPausingFired() {
@@ -81,9 +89,6 @@ final class TimerTestContext {
         stoppedFired = true;
     }
 
-    boolean stoppingFired;
-    boolean stoppedFired;
-
 }
 
 class TimerTestListener implements TimerListener {
@@ -106,27 +111,27 @@ class TimerTestListener implements TimerListener {
 
     @Override
     public void tick(TickEvent e) {
-
+        ctx.tickFired(e);
     }
 
     @Override
     public void pausing() {
-
+        ctx.pausingFired();
     }
 
     @Override
     public void paused() {
-
+        ctx.pausedFired();
     }
 
     @Override
     public void stopping() {
-
+        ctx.stoppingFired();
     }
 
     @Override
     public void stopped() {
-
+        ctx.stoppedFired();
     }
 }
 
@@ -145,13 +150,38 @@ public final class HandlerTimerTest {
         ctx = new TimerTestContext();
         listener = new TimerTestListener(ctx);
         timer = new HandlerTimer(listener);
+        timer.start();
     }
 
     @Test
     public void canFireStartEvents() {
-        timer.start();
-        timer.stop();
         assertTrue(ctx.isStartedFired());
         assertTrue(ctx.isStartingFired());
+        ctx.reset();
+    }
+
+    @Test
+    public void canFirePauseEvents() {
+        timer.pause();
+        assertTrue(ctx.isPausedFired());
+        assertTrue(ctx.isPausingFired());
+        ctx.reset();
+        timer.start();
+    }
+
+    @Test
+    public void canFireStopEvents() {
+        timer.stop();
+        assertTrue(ctx.isStoppedFired());
+        assertTrue(ctx.isStoppingFired());
+        ctx.reset();
+        timer.start();
+    }
+
+    @Test
+    public void canFireTickEvents() {
+        assertTrue(ctx.isTickFired());
+        TickEvent e = ctx.getLastEvent();
+        assertNotNull(e);
     }
 }

@@ -3,7 +3,7 @@ package com.sampa.yucca.core;
 /**
  * Created by cclamb on 6/20/15.
  */
-public interface TimerListener {
+public interface ControlListener {
     void starting();
     void started();
     void tick(TickEvent e);
